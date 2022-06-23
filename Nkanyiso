@@ -1,0 +1,196 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+
+namespace Recruitment
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            #region Given_Recoreds
+            var Given_Recoreds = new List<PostionCalculator>();
+            Given_Recoreds.Add(new PostionCalculator
+            {
+                PositionId = 1,
+                Longitude = -102.100843f,
+                Latitude = 34.544909f
+            });
+            Given_Recoreds.Add(new PostionCalculator
+            {
+                PositionId = 2,
+                Longitude = -99.123124f,
+                Latitude = 32.345544f
+            });
+            Given_Recoreds.Add(new PostionCalculator
+            {
+                PositionId = 3,
+                Longitude = -100.214124f,
+                Latitude = 33.234235f
+            });
+            Given_Recoreds.Add(new PostionCalculator
+            {
+                PositionId = 4,
+                Longitude = -95.348899f,
+                Latitude = 35.195739f
+            });
+            Given_Recoreds.Add(new PostionCalculator
+            {
+                PositionId = 5,
+                Longitude = -97.789573f,
+                Latitude = 31.895839f
+            });
+            Given_Recoreds.Add(new PostionCalculator
+            {
+                PositionId = 6,
+                Longitude = -101.789573f,
+                Latitude = 32.895839f
+            });
+            Given_Recoreds.Add(new PostionCalculator
+            {
+                PositionId = 7,
+                Longitude = -100.225732f,
+                Latitude = 34.115839f
+            });
+            Given_Recoreds.Add(new PostionCalculator
+            {
+                PositionId = 8,
+                Longitude = -99.992232f,
+                Latitude = 32.335839f
+            });
+            Given_Recoreds.Add(new PostionCalculator
+            {
+                PositionId = 9,
+                Longitude = -94.792232f,
+                Latitude = 33.535339f
+            });
+            Given_Recoreds.Add(new PostionCalculator
+            {
+                PositionId = 10,
+                Longitude = -100.222222f,
+                Latitude = 32.234235f
+            });
+
+            #endregion
+
+            List<PostionCalculator> result = ReadRecords("data/VehiclePositions.dat");
+
+            //loop for given positions
+            List<PostionCalculator> distanceresult = new List<PostionCalculator>();
+            foreach (var item in Given_Recoreds)
+            {
+                distanceresult = CalcDistance(result, item.Latitude, item.Longitude);
+            }
+
+            distanceresult = distanceresult.OrderBy(v => v.distance).ToList();
+
+            Console.ReadKey();
+        }
+
+        private static List<PostionCalculator> CalcDistance(List<PostionCalculator> result, double positionLatitude, double positionLongitude)
+        {
+            var calcResult = new List<PostionCalculator>();
+
+            foreach (PostionCalculator car in result)
+            {
+                car.distance = CalculateDistance(positionLatitude, positionLongitude, car.Latitude, car.Longitude, 'k');
+                calcResult.Add(car);
+            }
+            return calcResult;
+
+        }
+        public static List<PostionCalculator> ReadRecords(string fileName)
+        {
+            var result = new List<PostionCalculator>();
+            // store FileStream to check current position
+            using (FileStream s = File.OpenRead(fileName))
+            // and BinareReader to read values
+            using (BinaryReader r = new BinaryReader(s))
+            {
+                // stop when reached the file end
+                while (s.Position < s.Length)
+                {
+                    try
+                    {
+                        PostionCalculator rec = new PostionCalculator();
+                        // or read two bytes and use an array instead of two separate bytes.
+
+                        rec.PositionId = r.ReadInt32();
+                        rec.VehicleRegistration = BytesToString(r.ReadBytes(r.ReadByte()));
+                        rec.Latitude = r.ReadSingle();
+                        rec.Longitude = r.ReadSingle();
+                        rec.RecordedTimeUTC = (long)r.ReadUInt64();
+                        if (float.IsNaN(rec.Longitude) || float.IsNaN(rec.Latitude))
+                        {
+                            continue;
+                        }
+                     
+                        result.Add(rec);
+                        
+                    }
+                    catch 
+                    {
+                        // handle unexpected end of file somehow.
+                    }
+                }
+                return result;
+            }
+        }
+        private static string BytesToString(byte[] bytes)
+        {
+
+            string doc = Encoding.Default.GetString(bytes);
+
+            return doc;
+        }
+        private static double CalculateDistance(double lat1, double lon1, double lat2, double lon2, char unit)
+        {
+            if ((lat1 == lat2) && (lon1 == lon2))
+            {
+                return 0;
+            }
+            else
+            {
+                double theta = lon1 - lon2;
+                double distance = Math.Sin(ConvertDegreeToRadians(lat1)) * Math.Sin(ConvertDegreeToRadians(lat2)) + Math.Cos(ConvertDegreeToRadians(lat1)) * Math.Cos(ConvertDegreeToRadians(lat2)) * Math.Cos(ConvertDegreeToRadians(theta));
+                distance = Math.Acos(distance);
+                distance = ConvertRadiansToDegree(distance);
+                distance = distance * 60 * 1.1515;
+                if (unit == 'K')
+                {
+                    distance *= 1.609344;
+                }
+                else if (unit == 'N')
+                {
+                    distance *= 0.8684;
+                }
+                return distance;
+            }
+        }
+
+        //This function converts decimal degrees to radians     
+        private static double ConvertDegreeToRadians(double degree)
+        {
+            return (degree * Math.PI / 180.0);
+        }
+
+        //This function converts radians to decimal degrees 
+        private static double ConvertRadiansToDegree(double radians)
+        {
+            return (radians / Math.PI * 180.0);
+        }
+        public class PostionCalculator
+        {
+            public Int32 PositionId;
+            public string VehicleRegistration;
+            public float Latitude;
+            public float Longitude;
+            public Int64 RecordedTimeUTC;
+            public double distance;
+
+        }
+    }
+}
+
