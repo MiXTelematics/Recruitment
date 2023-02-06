@@ -1,4 +1,4 @@
-# Vehicle Position Challenge
+# Vehicle Position Challenge - Instructions for Firmware Candidates ONLY
 
 ## Task
 The binary data file "VehiclePositions.dat" in "VehiclePositions_DataFile.zip" contains a position for each of 2 million vehicles. Your task is to write a program that finds the nearest vehicle 
@@ -28,18 +28,6 @@ positions in the data file to each of the 10 co-ordinates provided in the table 
  * Your solution should correctly identify the position IDs of the closest positions
  * Your solution should find the position IDs in under 80ms when run on our benchmark PC: 1.9GHz, Turbo 4.8Ghz, 4 Cores, 8 Threads
  * You are allowed 1 submission attempt
-
-## How to submit your solution
- * Create a __PRIVATE__ repository on Github (free)            <--- Very important: Ensure that the repository is __PRIVATE__
- * Update the README.md file:
-   * Explain your problem solving approach (design decisions) and your method
-   * Specify any assumptions made
- * Add the following contributors to your repository:
-   * https://github.com/CarloPutter
-   * https://github.com/jonom-mix
-   * https://github.com/jjgrobbelaar
- * Notify us of completion with an email containing your repository URL
-   * Carmen.Olivier@mixtelematics.com
 
 ## Additional information
 
