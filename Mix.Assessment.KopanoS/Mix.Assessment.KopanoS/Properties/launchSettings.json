@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Mix.Assessment.KopanoS": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
