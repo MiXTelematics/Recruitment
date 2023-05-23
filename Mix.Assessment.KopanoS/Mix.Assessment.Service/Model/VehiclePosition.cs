@@ -1,15 +1,18 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Mix.Assessment.Service.Model;
 
+[StructLayout(LayoutKind.Auto)]
 public struct VehiclePosition
 {
-    public int VehicleId { get; set; }
-    public string? VehicleRegistration { get; set; }
-    public float Latitude { get; set; }
-    public float Longitude { get; set; }
-    public Int64 RecordedTimeUTC { get; set; }
+    public int VehicleId;
+    [MarshalAs(UnmanagedType.LPStr)]
+    public string VehicleRegistration;
+    public float Latitude;
+    public float Longitude;
+    public Int64 RecordedTimeUTC;
 
     /// <summary>
     /// Error on Marshal => Access Violation OR invalid Bytes
@@ -43,6 +46,15 @@ public struct VehiclePosition
         {
             Console.Write(ex.Message);
         }
+        return vp;
+    }
+
+    public static VehiclePosition FromBinaryReaderBlock(BinaryReader br)
+    {
+        byte[] buff = br.ReadBytes(VPSize.Size);
+        GCHandle handle = GCHandle.Alloc(buff,GCHandleType.Pinned);
+        VehiclePosition vp = (VehiclePosition)Marshal.PtrToStructure(handle.AddrOfPinnedObject(),typeof(VehiclePosition));
+        handle.Free();
         return vp;
     }
 }

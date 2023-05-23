@@ -56,8 +56,9 @@ namespace Mix.Assessment.Service.Helpers
         {
             if(!CanRead)
             {
-                data = VehiclePosition.FromBinaryReaderField(br);
+                //data = VehiclePosition.FromBinaryReaderField(br);
                 //data = VehiclePosition.FromFileStream(fs);
+                data = VehiclePosition.FromBinaryReaderBlock(br);
                 position += VPSize.Size;
                 return true;
             }
